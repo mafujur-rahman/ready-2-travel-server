@@ -39,6 +39,12 @@ async function run() {
 
     const spotCollection = client.db('spotDB').collection('spot')
 
+    app.get('/spot', async (req, res) =>{
+      const cursor = spotCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    })
+
     app.post('/spot', async (req, res) =>{
       const newSpot = req.body;
       console.log(newSpot);
