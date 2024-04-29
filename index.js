@@ -32,6 +32,7 @@ const client = new MongoClient(uri, {
   }
 });
 
+
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
@@ -39,6 +40,8 @@ async function run() {
 
     const spotCollection = client.db('spotDB').collection('spot')
     const countryCollection = client.db('spotDB').collection('country')
+
+
 
     app.get('/spot', async (req, res) => {
       const cursor = spotCollection.find();
@@ -72,12 +75,34 @@ async function run() {
       res.send(result);
     })
 
-    
+    app.put('/spot/:id', async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) }
+      const options = { upsert: true };
+      const updatedSpot = req.body;
+      const spot = {
+        $set: {
+          img: updatedSpot.img,
+          spotName: updatedSpot.spotName,
+          countryName: updatedSpot.countryName,
+          location: updatedSpot.location,
+          description: updatedSpot.description,
+          cost: updatedSpot.cost,
+          seasonality: updatedSpot.seasonality,
+          travelTime: updatedSpot.travelTime,
+          visitor: updatedSpot.visitor
+        }
+      }
+      const result = await spotCollection.updateOne(filter, spot, options);
+      res.send(result)
+    })
+
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
-  } finally {
+  }
+  finally {
     // Ensures that the client will close when you finish/error
     // await client.close();
   }
