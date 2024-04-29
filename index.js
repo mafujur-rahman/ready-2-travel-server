@@ -10,11 +10,11 @@ app.use(cors());
 app.use(express.json());
 
 
-app.get('/', (req, res) =>{
-    res.send('Server is running')
+app.get('/', (req, res) => {
+  res.send('Server is running')
 })
-app.listen(port, () =>{
-    console.log(`server is running on port: ${port}`);
+app.listen(port, () => {
+  console.log(`server is running on port: ${port}`);
 })
 
 
@@ -40,30 +40,39 @@ async function run() {
     const spotCollection = client.db('spotDB').collection('spot')
     const countryCollection = client.db('spotDB').collection('country')
 
-    app.get('/spot', async (req, res) =>{
+    app.get('/spot', async (req, res) => {
       const cursor = spotCollection.find();
       const result = await cursor.toArray();
       res.send(result);
     })
-    app.get('/country', async (req, res) =>{
+    app.get('/country', async (req, res) => {
       const cursor = countryCollection.find();
       const result = await cursor.toArray();
       res.send(result);
     })
 
-    app.get('/spot/:id', async(req, res) =>{
+    app.get('/spot/:id', async (req, res) => {
       const id = req.params.id;
-      const query = {_id: new ObjectId(id)}
-      const result =  await spotCollection.findOne(query);
+      const query = { _id: new ObjectId(id) }
+      const result = await spotCollection.findOne(query);
       res.send(result);
     })
 
-    app.post('/spot', async (req, res) =>{
+    app.delete('/spot/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) }
+      const result = await spotCollection.deleteOne(query);
+      res.send(result);
+    })
+
+    app.post('/spot', async (req, res) => {
       const newSpot = req.body;
       console.log(newSpot);
       const result = await spotCollection.insertOne(newSpot);
       res.send(result);
     })
+
+    
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
